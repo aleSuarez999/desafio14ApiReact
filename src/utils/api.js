@@ -3,9 +3,7 @@ import axios from "axios";
 const axiosInstance = axios.create({
     baseURL: "http://api.openweathermap.org/data/2.5"
     
-    //url completo ejemplo
-    //http://api.openweathermap.org/data/2.5/forecast?id=524901&appid=fbeaa17e7473846bee9bc88bc161730e"
-
+   
     // url completo ejercicio
     
     //https://api.openweathermap.org/data/2.5/weather?q=ohio&appid=fbeaa17e7473846bee9bc88bc161730e
@@ -40,7 +38,11 @@ const axiosInstance = axios.create({
     */
 })
 
-export const getClima = async () => {
-    const resp = axiosInstance.get("q=lanus&units=metric&appid=fbeaa17e7473846bee9bc88bc161730e")
+export const getClima = async (city) => {
+
+   
+    const resp = await axiosInstance.get(`weather?q=${city}&units=metric&appid=fbeaa17e7473846bee9bc88bc161730e`)
+    // metric muestra en celsius
     return resp.data
+   
 }
