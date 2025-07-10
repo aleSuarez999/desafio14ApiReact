@@ -7,10 +7,10 @@ function App() {
 
 
   return (
-    <>
+    <div className='weather-container'>
       <WeatherCity />
 
-    </>
+    </div>
   )
 }
 

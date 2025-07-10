@@ -38,7 +38,7 @@ const axiosInstance = axios.create({
     */
 })
 
-export const getClima = async (city) => {
+export const obtenerTemperatura = async (city) => {
 
    
     const resp = await axiosInstance.get(`weather?q=${city}&units=metric&appid=fbeaa17e7473846bee9bc88bc161730e`)

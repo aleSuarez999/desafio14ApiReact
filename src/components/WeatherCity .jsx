@@ -1,13 +1,26 @@
 import React, { useEffect, useState } from 'react'
-import { getClima } from '../utils/api'
+import { obtenerTemperatura } from '../utils/api'
 import Text from './Text'
+import "../wheathercity.css"
 
 function WeatherCity () {
     
     const [cityFind, setCityFind] = useState("")
     const [weather, setWeather] = useState([])
     const [message, setMessage] = useState("")
-    const [temp, setTemp] = useState("")
+    const [temperatura, setTemp] = useState("")
+    const [msgError, setError] = useState("")
+
+    const personalizaError = (errorCode) => {
+    const errorMessages = {
+      404: "Ciudad no encontrada. Por favor, verifica el nombre.",
+      default: "Ocurrió un error inesperado. Intenta nuevamente."
+    };
+
+    return errorMessages[errorCode] || errorMessages.default;
+  };
+
+
     const handleChange = e => {
        // if (e.target.value)
             setCityFind(e.target.value)
@@ -19,28 +32,34 @@ function WeatherCity () {
         if (cityFind == "")
             return;
 
-        getClima(cityFind)
+        obtenerTemperatura(cityFind)
         .then( clima => setWeather(clima)  ) // seteo la variable que chequeo con useEffect
-        .catch( err => console.error(err))
+        //.catch( err => setError(`El error es ${err}`))
+        .catch( err => {
+                        const errorCode = err.response?.status || err.code || "default";
+                        const errorMessage = personalizaError(errorCode);
+                        setError(errorMessage);
+                        console.error("Error:", err);
+                }) 
         .finally( setCityFind("") )
        
     }
 
     useEffect(() => {
-        console.log(weather.length )
-        if (weather.length < 2)
+        
+        if (weather.length == 0)
             return;
 
-        console.log("hay temperatura")
         setTemp(weather.main.temp)
-        setMessage((temp > 30) ? `Hace Mucho Calor` : `Hace mucho frío`)
+        setMessage((temperatura > 30) ? `Hace Mucho Calor` : `Hace mucho frío`)
 
     }, [weather])
 
     return (
         <>
-        <form name='frmWeather' id='frmWeather' onSubmit={handleSubmit} >
+        <form name='frmWeather' id='frmWeather' className="weather-form" onSubmit={handleSubmit} >
             <input
+            className="weather-input"
             type="text"
             id="cityFind"
             name="cityFind"
@@ -48,12 +67,23 @@ function WeatherCity () {
             onChange={handleChange}
             placeholder="Ingresa una ciudad" />
 
-            <button type="submit" >Consultar Clima </button>
+            <button  className="weather-button" type="submit" >Consultar Clima </button>
         </form>
+        <div>
         {
-            (temp) ? <Text as="p" >{`${temp} C ${message}`}</Text> : undefined
             
+            (temperatura != "") ? <><Text as="p" >{`La Temperatura es de: ${temperatura} °C `}</Text><Text as="p" >{message}</Text></> : undefined
+            
+
         }
+        </div>
+      {
+        (msgError != "") && (
+            <div className="weather-error">
+                <Text as="p">{msgError}</Text>
+            </div>
+        )
+      }
         </>
   )
 
